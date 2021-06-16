@@ -1,5 +1,6 @@
 import './index.css';
 import React from 'react';
+import { Link } from 'react-router-dom';
 
 class Auth extends React.Component{
 
@@ -37,7 +38,6 @@ class Auth extends React.Component{
                 Please log in using that account has<br />
                 registered on the website.
                 </p>
-                <form className="mt-6" action="#" method="POST" x-data="{ show: false }">
                 <div className="mb-7">
                     <label className="block text-lg font-medium text-label">Email Address</label>
                     <div className="flex w-full px-5 py-4 mt-3 text-base font-light rounded-xl input">
@@ -75,11 +75,11 @@ class Auth extends React.Component{
                 {/* <div className="mt-3 text-right">
                     <a href="#" className="forgot-password text-sm italic">Forgot Password?</a>
                 </div> */}
-                <button type="submit"
-                    className="btn-fill block w-full px-4 py-3 mt-9 font-medium text-xl text-white transition duration-500 ease-in-out transform rounded-xl hover:bg-green-800 hover:to-black focus:shadow-outline focus:outline-none focus:ring-2 ring-offset-current ring-offset-2">
+                <Link to="/dashboard">
+                <button type="submit" className="btn-fill block w-full px-4 py-3 mt-9 font-medium text-xl text-white transition duration-500 ease-in-out transform rounded-xl hover:bg-green-800 hover:to-black focus:shadow-outline focus:outline-none focus:ring-2 ring-offset-current ring-offset-2">
                     Log In To My Account
                 </button>
-                </form>
+                </Link>
                 {/* <p className="mt-8 text-center text-sm text-foot">
                 Don't have an account yet?
                 <a href="#" className="font-medium hover:underline text-link">Register Here</a>

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, Redirect } from 'react-router-dom';
 import LoadingImage from './loading.jpg';
 
 class Isitabel extends React.Component{
@@ -9,12 +9,25 @@ class Isitabel extends React.Component{
             isLoaded : false,
             persons : [],
             isError : false,
+            falseToken : false,
         }
     }
 
     componentDidMount(){
-        fetch(`${process.env.REACT_APP_APIBASEURL}/api/person`)
-        .then(res=>res.json())
+        fetch(`${process.env.REACT_APP_APIBASEURL}/api/person?key=${localStorage.getItem('key')}`)
+        .then(res=>{
+            if(res.status==200){
+                return res.json()
+            }else{
+                // console.log(error);
+                this.setState({
+                    isError: true,
+                    isLoaded: true,
+                    falseToken: true,
+                })
+                return Promise.reject(res);
+            }
+        })
         .then(
             (result)=>{
                 this.setState({
@@ -26,28 +39,35 @@ class Isitabel extends React.Component{
                 console.log(error);
                 this.setState({
                     isError: true,
-                    isLoaded: true
+                    isLoaded: true,
+                    falseToken: true,
                 })
             }
         )
     }
 
     render(){
-        const {persons,isLoaded,isError} = this.state;
+        const {persons,isLoaded,isError,falseToken} = this.state;
 
         if(isLoaded){
             // sudah Loading
             if(isError){
-                return(
-                    <tr>
-                        <td colSpan="7" className="text-center">
+                if(falseToken){
+                    return(
+                        <Redirect to="/logout" />
+                    )
+                }else{
+                    return(
+                        <tr>
+                            <td colSpan="7" className="text-center">
 
-                            {/* <img alt="loading..." className="mx-auto" src={LoadingImage} style={{maxWidth: '200px'}} /> */}
-                            <p className="text-center mx-auto text-lg font-semibold mb-3">Error</p>
+                                {/* <img alt="loading..." className="mx-auto" src={LoadingImage} style={{maxWidth: '200px'}} /> */}
+                                <p className="text-center mx-auto text-lg font-semibold mb-3">Error</p>
 
-                        </td>
-                    </tr>
-                )
+                            </td>
+                        </tr>
+                    )
+                }
             }else{
                 return(
                     persons.filter((val)=>{
@@ -136,11 +156,24 @@ class Dashboard extends React.Component{
 
     constructor(props){
         super(props);
-        this.state = {
-            search : ''
-        }
+        // this.state = {
+        //     search : ''
+        // }
         this.changeSearch = this.changeSearch.bind(this);
+        if(localStorage.getItem('user')){
+            this.state = {
+                search : '',
+                isLogedIn : true
+            }
+        }else{
+            this.state = {
+                search : '',
+                isLogedIn : false
+            }
+        }
     }
+
+
 
     changeSearch(val){
         this.setState(
@@ -151,26 +184,32 @@ class Dashboard extends React.Component{
     }
 
     render(){
-        return(
-            <div className="min-w-screen min-h-screen bg-gray-100 flex flex-col items-center pt-14 bg-gray-100 font-sans overflow-hidden">
-                <h1 className="text-4xl mt-2 text-center mb-5 font-bold">Dashboard</h1>
-                <div>
-                    <Link to="/logout">
-                        <button className="bg-red-400 hover:bg-red-600 rounded px-4 py-2 mb-3 text-white">
-                            Logout
-                        </button>
-                    </Link>
-                </div>
-                <div className="container mx-auto">
-                    <div className="flex">
-                        <input onChange={this.changeSearch} value={this.state.search} type="text" className="w-full font-light focus:outline-none mx-auto block border p-3 text-md text-center" placeholder="Search" />
+        if(this.state.isLogedIn){
+            return(
+                <div className="min-w-screen min-h-screen bg-gray-100 flex flex-col items-center pt-14 bg-gray-100 font-sans overflow-hidden">
+                    <h1 className="text-4xl mt-2 text-center mb-5 font-bold">Dashboard</h1>
+                    <div>
+                        <Link to="/logout">
+                            <button className="bg-red-400 hover:bg-red-600 rounded px-4 py-2 mb-3 text-white">
+                                Logout
+                            </button>
+                        </Link>
                     </div>
-                    {/* Table */}
-                    <Table search={this.state.search} />
-                    {/* End Table */}
+                    <div className="container mx-auto">
+                        <div className="flex">
+                            <input onChange={this.changeSearch} value={this.state.search} type="text" className="w-full font-light focus:outline-none mx-auto block border p-3 text-md text-center" placeholder="Search" />
+                        </div>
+                        {/* Table */}
+                        <Table search={this.state.search} />
+                        {/* End Table */}
+                    </div>
                 </div>
-            </div>
-        )
+            )
+        }else{
+            return(
+                <Redirect to="/" />
+            )
+        }
     }
 
 }

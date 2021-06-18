@@ -1,14 +1,26 @@
 import './App.css';
 import React from "react";
 import {
-  HashRouter as Router,
+  BrowserRouter as Router,
   Switch,
   Route,
+  Redirect
 } from "react-router-dom";
 import Auth from "./Pages/Auth";
 import Dashboard from "./Pages/Dashboard";
 import Notmatch from './Pages/404';
 import Tracker from './Pages/Tracker';
+
+function Logout(){
+  localStorage.removeItem("user");
+  localStorage.removeItem("key");
+  return(
+    <div>
+      <h1 className="text-lg">LOGING OUT</h1>
+      <Redirect to="/" />
+    </div>
+  )
+}
 
 function App() {
   return (
@@ -28,6 +40,9 @@ function App() {
         </Route>
         <Route path="/idchecker">
           <p>Id Checker</p>
+        </Route>
+        <Route path="/logout">
+          <Logout />
         </Route>
         <Route path="*">
           <Notmatch />
